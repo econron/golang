@@ -1,0 +1,31 @@
+version: "2"
+sql:
+  - engine: "mysql"
+    queries: 
+      - "admin/query.sql"
+    schema: 
+      - "admin/schema.sql"
+    gen:
+      go:
+        package: "dbaccess"
+        out: "../dbaccess/admin"
+
+  - engine: "mysql"
+    queries: 
+      - "eventmanagement/query.sql"
+    schema: 
+      - "eventmanagement/schema.sql"
+    gen:
+      go:
+        package: "dbaccess"
+        out: "../dbaccess/eventmanagement"
+
+  - engine: "mysql"
+    queries: 
+      - "usermanagement/query.sql"
+    schema: 
+      - "usermanagement/schema.sql"
+    gen:
+      go:
+        package: "dbaccess"
+        out: "../dbaccess/usermanagement"
