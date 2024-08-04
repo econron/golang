@@ -3,7 +3,7 @@ package main
 import(
 	"context"
 	"log"
-	s3access "awsresources/infrastructure/repository/s3"
+	s3access "awsresources/infrastructure/s3"
 	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
