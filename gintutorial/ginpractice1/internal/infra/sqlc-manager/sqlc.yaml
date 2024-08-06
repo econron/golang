@@ -1,0 +1,11 @@
+version: "2"
+sql:
+  - engine: "mysql"
+    queries: 
+      - "query.sql"
+    schema: 
+      - "schema.sql"
+    gen:
+      go:
+        package: "dbaccess"
+        out: "../dbaccess"
