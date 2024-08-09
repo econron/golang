@@ -38,6 +38,9 @@ DELETE FROM users WHERE id = ?;
 INSERT INTO shop_owners (shop_id, name, email, password)
 VALUES (?, ?, ?, ?);
 
+-- name: GetShopOwnerById :one
+SELECT * FROM shop_owners WHERE id = ?;
+
 -- name: UpdateShopOwner :exec
 UPDATE shop_owners
 SET name = ?, email = ?, password = ?

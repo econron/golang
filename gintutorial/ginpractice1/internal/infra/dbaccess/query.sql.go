@@ -186,6 +186,23 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	return err
 }
 
+const getShopOwnerById = `-- name: GetShopOwnerById :one
+SELECT id, shop_id, name, email, password FROM shop_owners WHERE id = ?
+`
+
+func (q *Queries) GetShopOwnerById(ctx context.Context, id int64) (ShopOwner, error) {
+	row := q.db.QueryRowContext(ctx, getShopOwnerById, id)
+	var i ShopOwner
+	err := row.Scan(
+		&i.ID,
+		&i.ShopID,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+	)
+	return i, err
+}
+
 const removeFavoriteShop = `-- name: RemoveFavoriteShop :exec
 DELETE FROM favorite_shops WHERE user_id = ? AND shop_id = ?
 `

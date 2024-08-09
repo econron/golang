@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	shopowner "ginpractice1/internal/usecase/shopowner"
 )
 
 type album struct {
@@ -32,21 +34,31 @@ func postAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
 
-func getAlbumById(c *gin.Context) {
-	id := c.Param("id")
-	for _, a := range albums {
-		if a.ID == id {
-			c.IndentedJSON(http.StatusOK, a)
-			return
-		}
-	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+type Login struct {
+	User     string `form:"user" json:"user" xml:"user"  binding:"required"`
+	Password string `form:"password" json:"password" xml:"password" binding:"required"`
 }
+
+func updateProfile (c *gin.Context) {
+	var request shopowner.UpdateProfileRequest
+	if err := c.BindJSON(&request); err != nil {
+		return
+	}
+	usecase := shopowner.ShopOwnerUsecase{}
+	result := usecase.UpdateMyProfile(request)
+
+	if result == false {
+		c.IndentedJSON(http.StatusBadRequest, "karioki error")
+	}
+	c.IndentedJSON(http.StatusOK, "suceeded")
+}
+
+// type 
 
 func main(){
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
-	router.GET("/albums/:id", getAlbumById)
 	router.POST("/albums", postAlbums)
+	router.POST("/owner/profile", updateProfile)
 	router.Run("localhost:8080")
 }

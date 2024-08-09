@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"ginpractice1/internal/infra/dbaccess"
 	shopowner "ginpractice1/internal/domain/shopowner"
 )
@@ -11,7 +12,7 @@ type ShopOwnerRepository struct {
 	query *dbaccess.Queries
 }
 
-func (*ShopOwnerRepository) New() *ShopOwnerRepository {
+func New() *ShopOwnerRepository {
 	db, err := sql.Open("mysql", "user:password@tcp(127.0.0.1:13306)/dbname?parseTime=true")
 	if err != nil {
 		panic(err)
@@ -22,15 +23,19 @@ func (*ShopOwnerRepository) New() *ShopOwnerRepository {
 	}
 }
 
-func (r *ShopOwnerRepository) UpdateMyProfile(ctx context.Context, owner shopowner.Owner) bool {
+func (r *ShopOwnerRepository) UpdateMyProfile(owner *shopowner.Owner) bool {
 	params := dbaccess.UpdateShopOwnerParams{
 		ID: owner.ID,
 		Name: owner.Name,
 		Email: owner.Email,
 		Password: owner.Password,
 	}
-	r.query.UpdateShopOwner(ctx, params)
-	return false
+	err := r.query.UpdateShopOwner(context.TODO(), params)
+	if err != nil {
+		// todo add logger
+		return false
+	}
+	return true
 }
 
 func (r *ShopOwnerRepository) CreateAdContent() bool {
