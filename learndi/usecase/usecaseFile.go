@@ -9,14 +9,15 @@ type IUsecase interface {
 }
 
 type Usecase struct {
-
+	repo repository.IRepository
 }
 
-func New() IUsecase {
-	return &Usecase{}
+func New(r repository.IRepository) IUsecase {
+	return &Usecase{
+		repo: r,
+	}
 }
 
 func (u *Usecase) GetUser() string {
-	r := repository.New()
-	return r.GetUser()
+	return u.repo.GetUser()
 }
