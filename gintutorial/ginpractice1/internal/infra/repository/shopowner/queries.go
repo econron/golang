@@ -12,6 +12,8 @@ type ShopOwnerRepository struct {
 	query *dbaccess.Queries
 }
 
+// dbアクセスする際にここに書いてコネクションプールが使いまわせないのでは？
+// だからmain.goに持っていきたい
 func New() *ShopOwnerRepository {
 	db, err := sql.Open("mysql", "user:password@tcp(127.0.0.1:13306)/dbname?parseTime=true")
 	if err != nil {
@@ -30,6 +32,7 @@ func (r *ShopOwnerRepository) UpdateMyProfile(owner *shopowner.Owner) bool {
 		Email: owner.Email,
 		Password: owner.Password,
 	}
+	// ここcontext.TODOではない気がする
 	err := r.query.UpdateShopOwner(context.TODO(), params)
 	if err != nil {
 		// todo add logger
