@@ -240,16 +240,19 @@ func IIOWR(nr, size uintptr) uintptr {
 }
 
 // IIOR creates an IIOR ioctl.
+// 読み取り専用のioctlコマンド
 func IIOR(nr, size uintptr) uintptr {
 	return IIOC(read, nr, size)
 }
 
 // IIOW creates an IIOW ioctl.
+// 書き込み専用のioctlコマンド
 func IIOW(nr, size uintptr) uintptr {
 	return IIOC(write, nr, size)
 }
 
 // IIO creates an IIOC ioctl from a number.
+// データ転送を行わないicotlコマンド
 func IIO(nr uintptr) uintptr {
 	return IIOC(none, nr, 0)
 }
