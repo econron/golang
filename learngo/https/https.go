@@ -8,7 +8,7 @@ import(
 func ListenAndServe(addr string, handler Handler) error
 
 type Handler interface {
-	ServeHTTP(ResponseWriter *Request)
+	ServeHTTP(ResponseWriter *http.Request)
 }
 
 func PlayerServer(w http.ResponseWriter, r *http.Request) {
