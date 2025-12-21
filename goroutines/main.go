@@ -2,14 +2,22 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"sync"
 	"time"
+	"goroutines/nezumi"
 )
 
 func main() {
 	// workerPoolAntiPattern()
 	// workerPoolDeadlockPattern1()
-	workerPoolPattern1()
+	// workerPoolPattern1()
+	// scatterGatherPattern()
+	endRandStream()
+	nezumi.BadErrorHandling()
+	errorResults := nezumi.GoodErrorHandling()
+	fmt.Printf("Error Results: %v\n", errorResults.Errors)
+	nezumi.PipelinePattern()
 }
 
 // worker pool pattern：複数の料理人が作ったら1人のウェイターができた順にどんどん処理していくイメージ
@@ -129,7 +137,7 @@ func workerPoolPattern1() {
 	}()
 
 	go func() {
-		wg.Wait() // シェフ全員の仕事の終わりを待つ
+		wg.Wait()     // シェフ全員の仕事の終わりを待つ
 		close(orders) // その後注文を閉じる
 		fmt.Println("すべての料理が配膳されました！")
 	}()
@@ -137,4 +145,69 @@ func workerPoolPattern1() {
 	<-done // ウェイターの仕事の終わりを待つ
 
 	fmt.Println("すべての料理が配膳されました！")
+}
+
+type Result struct {
+	URL      string
+	Duration time.Duration
+	Data     string
+}
+
+func searchAPI(target string, duration time.Duration, ch chan<- Result) {
+	fmt.Printf("Searching %s for %v\n", target, duration)
+	time.Sleep(duration)
+	ch <- Result{URL: target, Duration: duration, Data: fmt.Sprintf("data for %s", target)}
+	fmt.Printf("Found %s in %v\n", target, duration)
+}
+func scatterGatherPattern() {
+	start := time.Now()
+	// バッファを3つ用意する
+	results := make(chan Result, 3)
+	go searchAPI("航空会社API", 1*time.Second, results)
+	go searchAPI("天気API", 2*time.Second, results)
+	go searchAPI("地図API", 3*time.Second, results)
+
+	// バッファチャネルを利用しているのでいつ終わるかがわかっている
+	// よってcloseしなくて良い
+	for range 3 {
+		result := <-results
+		fmt.Printf("受信: %s\n", result.Data)
+	}
+
+	fmt.Printf("Time taken: %v\n", time.Since(start))
+}
+
+// TODO: 3つのAPI結果が揃うまで待ってからやる
+
+// go言語による並行処理のコード
+func endRandStream() {
+	done := make(chan interface{})
+	finished := make(chan bool)
+	// doneチャネルを渡して、乱数生成を終了させる
+	randStream := newRandStream(done, finished)
+	for i := range 10 {
+		fmt.Printf("%d: %d\n", i, <-randStream)
+	}
+	close(done)
+	// time.Sleep(1 * time.Second) 元のコードはこうだが、time.Sleepに依存するとgorotineの終了を確実に保証できない
+	// よってfinishedチャネルを待つことでgoroutineの終了を確実に保証する
+	<-finished
+}
+
+// 乱数を生成するgoroutine
+func newRandStream(done <-chan interface{}, finished chan<- bool) <-chan int {
+	randStream := make(chan int)
+	go func() {
+		defer fmt.Println("newRandStream done")
+		defer close(randStream)
+		for {
+			select {
+			case randStream <- rand.Int():
+			case <-done:
+				finished <- true
+				return
+			}
+		}
+	}()
+	return randStream
 }
