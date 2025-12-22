@@ -1,3 +1,3 @@
-module resipe
+module recipes
 
 go 1.22.5

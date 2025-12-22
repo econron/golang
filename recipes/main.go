@@ -3,6 +3,7 @@ package main
 import (
 	"iter"
 	"fmt"
+	"recipes/stringrecipes"
 )
 
 // 構文
@@ -89,4 +90,9 @@ func main() {
 	for i, v := range OnlyEvens(nums2) {
 		fmt.Printf("Index: %d, Value: %d\n", i, v)
 	}
+	stringrecipes.Basic1()
+	stringrecipes.Basic2()
+	stringrecipes.Basic3()
+	stringrecipes.Basic4()
+	fmt.Printf("RLE: %v\n", stringrecipes.RLE("a3b2c4"))
 }
