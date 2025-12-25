@@ -1,6 +1,9 @@
 package dddlike
 
-import "fmt"
+import (
+	"fmt"
+	"errors"
+)
 
 // 集約ルートをベースにイベントで状態を変化するように書く
 /*
@@ -34,6 +37,7 @@ type StockStatus string
 type Book struct {
 	name string
 	status StockStatus
+	count int
 }
 
 const (
@@ -45,6 +49,7 @@ func NewBook(name string) *Book {
 	return &Book{
 		name: name,
 		status: OUTOFSTOCK,
+		count: 0,
 	}
 }
 
@@ -59,6 +64,7 @@ func (b *Book) Arrived() error {
 		return fmt.Errorf("invalid status: %s", b.status)
 	}
 	b.status = INSTOCK
+	b.count+=1
 	return nil
 }
 
@@ -67,6 +73,13 @@ func (b *Book) Sold() error {
 	if b.status == OUTOFSTOCK {
 		return fmt.Errorf("invalid status: %s", b.status)
 	}
-	b.status = OUTOFSTOCK
+	if b.count == 0 {
+		return errors.New("count is already 0")
+	}
+	b.count-=1
+	if b.count == 0 {
+		b.status = OUTOFSTOCK	
+	}
+	
 	return nil
 }

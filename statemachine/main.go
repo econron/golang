@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	sm "statemachine/statemachine"
-	ddd "statemachine/dddlike"
+	ddd "statemachine/dddlike/v1"
 )
 
 func main() {
